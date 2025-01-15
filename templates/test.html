@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Styled Border with Header and Image</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .info-container {
+      max-width: 600px;
+      margin: 0 auto;
+      border: 2px solid #19D6BD;
+      border-radius: 15px;
+      padding: 20px;
+      position: relative;
+      background-color: white;
+    }
+
+    .info-header {
+      position: absolute;
+      top: -19px;
+      left: 20px;
+      font-size: 30px;
+      font-weight: bold;
+      color: #19D6BD;
+      background-color: white;
+      padding: 0 10px;
+    }
+
+    .info-content {
+      display: flex;
+      align-items: flex-start; /* Align image and text to the top */
+      gap: 20px; /* Space between the image and text */
+    }
+
+    .info-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      flex-shrink: 0; /* Prevent the image from shrinking */
+    }
+    
+    .info-text {
+      text-align: justify;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+      flex-grow: 1; /* Allow the text to fill the remaining space */
+      overflow-wrap: break-word; /* Break long words */
+    }
+  </style>
+</head>
+<body>
+  <div class="info-container">
+    <div class="info-header">WHY IS IT SAFE?</div>
+    <div class="info-content">
+      <img class="info-image" src="https://via.placeholder.com/50" alt="Icon">
+      <div class="info-text">
+        <b>Lorem ipvi. Elvi is here to guide you through the process of detecting and reportingdsadsadsadsad suspicious emails, URLs, and text messagddddddddddddddddddddddddddsafsdhfgbhjsgbkgkdfges. With Elvi’s , you’ll be empowered to take control of your online security and stay ahead of cyber threats. gfdkjgjkdghjkdshgjkfdhgjksdhgfjkdshgjkshgfs dgjfdshgds</b>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

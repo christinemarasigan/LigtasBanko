@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <link rel="shortcut icon" href="../static/assets/logo.png" type="image/x-icon" />
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    .chat-box {
+        left: 1100px;
+        top: 230px;
+        width: 400px;
+        height: 500px;
+        border: 1px solid gray;
+        border-radius: 35px;
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Prevent overflow outside of this box */
+        background-color: white;
+        z-index: 2002;
+    }
+
+    .message-container {
+        flex-grow: 1; /* Ensures it occupies the remaining height */
+        overflow-y: auto; /* Allows scrolling when content overflows */
+        max-height: calc(100% - 60px - 40px); /* Adjust for the space occupied by the textarea */
+        padding-right: 10px; /* Optional: Prevent scroll bar overlap with the messages */
+        box-sizing: border-box; /* Ensure padding doesn't affect height calculation */
+        padding-bottom: 60px; /* Ensure space for last message */
+        background-color: white;
+    }
+
+    .message {
+        margin: 10px 0;
+        word-wrap: break-word; /* Break long words if necessary */
+        overflow-wrap: break-word; /* Ensure text fits in smaller spaces */
+        box-sizing: border-box; /* Include padding/border in element size */
+    }
+
+
+    .user {
+        color: white;
+        font-size: 16px;
+        font-weight: 350;
+        text-align: left;
+        font-family: 'Lexend';
+    }
+
+    .assistant {
+        color: black;
+        font-size: 14px;
+        font-weight: 275;
+        margin-left: 99px;
+        text-align: center;
+        font-family: 'Lexend';
+    }
+
+    textarea {
+        width: 335px; /* Make textarea take full width of the form container */
+        padding: 10px; /* Padding inside textarea */
+        border: 1px solid #19D6BD; /* Border with color matching the form container */
+        border-radius: 30px; /* Rounded corners for the textarea */
+        font-size: 16px; /* Set font size for the text inside textarea */
+        font-family: 'Lexend'; /* Same font family for consistency */
+        resize: none; /* Disable resizing of textarea */
+        text-align: left;
+        height: 30px; /* Adjust height of the textarea */
+        margin: 10px auto; /* Center the textarea */
+        position: absolute; /* Fix position at the bottom of the chat-box */
+        bottom: 10px; /* Distance from the bottom edge of the chat-box */
+        left: 20px; /* Align with the container */
+        background-color: white;
+    } 
+
+    .bot-box {
+        position: relative;
+        top: 10px;
+        left: 120px;
+        transform: translateX(-50%);
+        max-width: 200px;
+        width: auto;
+        height: auto;
+        background-color: #E6E6E6;
+        border-radius: 28px;
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+    }
+
+    .bot-box p {
+    margin: 0; /* remove default margin from <p> */
+    word-wrap: break-word; /* ensures text breaks inside <p> */
+    overflow-wrap: break-word; /* ensures long words wrap in <p> */
+}
+
+
+
+.user-box {
+    position: relative;
+    margin-left: auto; /* Push the box to the right edge */
+    max-width: 70%; /* Limit the width to 70% of the container */
+    width: auto; /* Allow the width to adjust dynamically to the content */
+    height: auto; /* Let the height adjust dynamically to the content */
+    background-color: #19D6BD;
+    border-radius: 20px; /* Rounded corners */
+    padding: 10px 15px; /* Add padding for better readability */
+    box-sizing: border-box;
+    display: inline-block; /* Ensure the box tightly wraps around content */
+    text-align: left; /* Text inside aligns left */
+    word-wrap: break-word; /* Allow breaking long words to wrap */
+    word-break: break-word; /* Ensure compatibility for breaking long words */
+    left:170px;
+}
+
+
+
+    .message.assistant {
+        margin: 10px 0;
+        position: relative;
+        width: 200px;
+        text-align: left;
+    }
+
+    .message.user {
+        margin: 10px 0;
+        position: relative;
+        width: 200px;
+        text-align: right;
+    }
+
+    .message p {
+        margin: 0;
+        word-wrap: break-word; /* Ensure the text breaks to fit the box */
+    }
+
+    .message.user p {
+    margin: 0;
+    word-wrap: break-word; /* Ensure the text breaks to fit the box */
+}
+
+.message.assistant p {
+    margin: 0;
+    word-wrap: break-word; /* Ensure the text breaks to fit the box */
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+    .top-design {
+        height: 80px;
+        background: linear-gradient(to right, #19D6BD, #0BB8E0);
+        width: 100%;
+        border-top-left-radius: 35px;
+        border-top-right-radius: 35px;
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+     /* Styling for the logo */
+    #Elvi-Icon {
+        position: absolute; /* Absolutely position the logo inside the container */
+        margin-top: -6px; /* Vertically center the logo */
+        left: 60px; /* Horizontally center the logo */
+        transform: translate(-50%, -50%); /* Offset by 50% of the logo's size to center it exactly */
+        width: 60px;
+        height: 60px;
+        filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    }
+
+    /* Styling for the text below the logo */
+    .elvi-text1 {
+        position: absolute;
+        top: 16px; /* Position the text below the logo */
+        left: 146px; /* Horizontally center the text */
+        transform: translateX(-50%); /* Offset by 50% of the text's size to center it exactly */
+        color: white; /* White color for the text */
+        font-size: 17px; /* Font size */
+        font-weight: 250; /* Regular weight */
+        font-family: 'Lexend';
+        text-align: center; /* Center-align the text */
+        width: 520px;
+    }
+    
+    /* Styling for the text below the logo */
+    .elvi-text2 {
+        position: absolute;
+        top: 38px; /* Position the text below the logo */
+        left: 189px; /* Horizontally center the text */
+        transform: translateX(-50%); /* Offset by 50% of the text's size to center it exactly */
+        color: white; /* White color for the text */
+        font-size: 19px; /* Font size */
+        font-weight: 350; /* Regular weight */
+        font-family: 'Lexend';
+        text-align: center; /* Center-align the text */
+        width: 520px;
+    }
+
+    /* Styling for the logo */
+    #Arrow-white-2 {
+        position: absolute; /* Absolutely position the logo inside the container */
+        top: 40px; /* Vertically center the logo */
+        left: 350px; /* Horizontally center the logo */
+        transform: translate(-50%, -50%); /* Offset by 50% of the logo's size to center it exactly */
+        width: 32px;
+        height: 32px;
+        filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+        cursor: pointer;
+        z-index: 1004;
+    }
+    .completionphishing-style {
+        margin-top: -30px;
+        border: 2px solid #19D6BD;
+        padding: 10px;
+        border-radius: 30px;
+        background: transparent; /* Ensure the inside is transparent */
+        display: flex; /* Use flexbox to align items */
+        align-items: center; /* Vertically align items in the center */
+        position: relative; /* To position the logo inside the div */
+    }
+
+    .completionphishing-content {
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-start; /* Align image and text to the top */
+      gap: 20px; /* Space between the image and text */
+    }
+
+    .completionbenign-style {
+        margin-top: -30px;
+        border: 2px solid #19D6BD;
+        padding: 10px;
+        border-radius: 30px;
+        background: transparent; /* Ensure the inside is transparent */
+        display: flex; /* Use flexbox to align items */
+        align-items: center; /* Vertically align items in the center */
+        position: relative; /* To position the logo inside the div */
+    }
+
+    .completionbenign-container {
+        width: 1200px;
+        margin: 0 auto;
+        margin-left: -100px;
+        margin-top: 470px;
+        margin-bottom: 10px;
+        border: 2px solid #19D6BD; /* Updated border color */
+        border-radius: 15px;
+        padding: 20px;
+        position: absolute;
+        background-color: white;
+    }
+
+    .completionphishing-container {
+      width: 1200px;
+      margin: 0 auto;
+      margin-left: -100px;
+      margin-top: 470px;
+      margin-bottom: 10px;
+      border: 2px solid #AE0F0F;
+      border-radius: 15px;
+      padding: 20px;
+      position: absolute;
+      background-color: white;
+    }
+
+    .completionunknown-container {
+        width: 1200px;
+        margin: 110px auto;
+        margin-left: -100px;
+        margin-top: 460px;;
+        margin-bottom: 10px;
+        border: 2px solid #000000; /* Updated border color */
+        border-radius: 15px;
+        padding: 20px;
+        position: absolute;
+        background-color: white;
+    }
+
+    .completionbenign-header {
+      position: absolute;
+      top: -25px;
+      left: 20px;
+      font-size: 30px;
+      font-weight: bold;
+      background-color: white;
+      color: #19D6BD;
+      padding: 0 10px;
+    }
+
+    .completionunknown-header {
+        position: absolute;
+        top: -25px;
+        left: 20px;
+        font-size: 30px;
+        font-weight: bold;
+        background-color: white;
+        color: #000000;
+        padding: 0 10px;
+    }
+
+    .completionphishing-header {
+      position: absolute;
+      top: -25px;
+      left: 20px;
+      font-size: 30px;
+      font-weight: bold;
+      background-color: white;
+      color: #AE0F0F;
+      padding: 0 10px;
+    }
+
+    .completionbenign-content {
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-start; /* Align image and text to the top */
+      gap: 20px; /* Space between the image and text */
+    }
+
+
+    .completionunknown-style {
+        margin-top: -30px;
+        border: 2px solid #000000;
+        padding: 10px;
+        border-radius: 30px;
+        background: transparent; /* Ensure the inside is transparent */
+        display: flex; /* Use flexbox to align items */
+        align-items: center; /* Vertically align items in the center */
+        position: relative; /* To position the logo inside the div */
+    }
+
+    .completionunknown-content {
+        margin-top: 20px;
+        display: flex;
+        align-items: flex-start; /* Align image and text to the top */
+        gap: 20px; /* Space between the image and text */
+    }
+
+    .textarea-container textarea {
+    font-size: 15px;
+    line-height: 1.6;
+    width: 340px;
+    resize: both;
+    text-indent: 17px;
+    padding-top: 14px;  /* Move both placeholder and text down */
+    }
+
+    /* Move only the placeholder text down */
+    .textarea-container textarea::placeholder {
+        color: #888;
+        font-size: 15px;
+        opacity: 1; /* Ensures the placeholder is visible */
+        margin-left: 10px;
+    }
+
+
+
+    .completionphishing-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+    }
+
+    .completionphishing-text {
+      text-align: justify;
+      font-size: 14px;
+      font-family: 'Lexend';
+      top:300px;
+      margin-bottom: 10px;
+      color: #333;
+      line-height: 1.6;
+      flex-grow: 1; /* Allow the text to fill the remaining space */
+      overflow-wrap: break-word; /* Break long words */
+    }
+
+    #dimmer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+    z-index: 0; /* Place it behind the chatbot but in front of the content */
+    display: none; /* Initially hidden */
+    z-index: 2001;
+}
+
+.phishing-steps-container {
+      position: relative;
+        display: flex;
+        flex-direction: row; /* Aligns the steps side by side */
+        margin-top: 470px; /* Adjust as needed for spacing */
+      }
+
+.Phishing-Rectangle-Step1 {
+      position: relative;
+      width: 425px;
+      height: 360px;
+      left: -10px;
+      top: 236px;
+      background: linear-gradient(180deg, #AE0F0F 0%, #5B0009 100%);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 50px;
+    }
+
+    .Phishing-Rectangle-Step2 {
+      position: relative;
+      width: 425px;
+      height: 360px;
+      left: 50px;
+      top: 236px;
+      background: linear-gradient(180deg, #AE0F0F 0%, #5B0009 100%);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 50px;
+    }
+
+    .Phishing-Rectangle-Step3 {
+      position: relative;
+      width: 425px;
+      height: 360px;
+      left: 110px;
+      top: 236px;
+      background: linear-gradient(180deg, #AE0F0F 0%, #5B0009 100%);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 50px;
+    }
+
+    .benign-steps-container {
+      position: relative;
+        display: flex;
+        flex-direction: row; /* Aligns the steps side by side */
+        margin-top: 470px; /* Adjust as needed for spacing */
+      }
+
+
+    .Benign-Rectangle-Step1 {
+      position: relative;
+      width: 425px;
+      height: 360px;
+      left: -10px;
+      top: 236px;
+      background: linear-gradient(180deg, #19D6BD 0%, #0BB8E0 100%);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 50px;
+    }
+
+    .Benign-Rectangle-Step2 {
+      position: relative;
+      width: 425px;
+      height: 360px;
+      left: 50px;
+      top: 236px;
+      background: linear-gradient(180deg, #19D6BD 0%, #0BB8E0 100%);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 50px;
+    }
+
+    .Benign-Rectangle-Step3 {
+      position: relative;
+      width: 425px;
+      height: 360px;
+      left: 110px;
+      top: 236px;
+      background: linear-gradient(180deg, #19D6BD 0%, #0BB8E0 100%);
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 50px;
+    }
+
+    .block-text {
+      position: absolute;
+      text-align: left;
+      width: 300px;
+      height: 89px;
+      left: 28px;
+      top: 110px;
+      font-family: 'Poppins', sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 18px;
+      line-height: 35px;
+      letter-spacing: 0.03em;
+      color: #FFFFFF;
+    }
+
+    .block-text-phishing {
+      position: absolute;
+      text-align: left;
+      width: 300px;
+      height: 89px;
+      left: 28px;
+      top: 110px;
+      font-family: 'Poppins', sans-serif;
+      font-style: normal;
+      font-weight: 800;
+      font-size: 18px;
+      line-height: 35px;
+      letter-spacing: 0.03em;
+      color: #FFFFFF;
+    }
+
+    .step-number {
+      position: absolute;
+      width: 90px;
+      height: 60px;
+      left: 5px;
+      top: 40px;
+      font-family: 'Poppins', sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 42px;
+      line-height: 40px;
+      letter-spacing: 0.03em;
+      color: #FFFFFF;
+    }
+
+    .description {
+      position: absolute;
+      width: 250px;
+      height: 80px;
+      left: 28px;
+      top: 180px;
+      font-family: 'Lexend', sans-serif;
+      font-style: normal;
+      text-align: left;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 30px;
+      letter-spacing: 0.06em;
+      color: #FFFFFF;
+    }
+
+    .description-phishing {
+      position: absolute;
+      width: 250px;
+      height: 80px;
+      left: 28px;
+      top: 180px;
+      font-family: 'Lexend', sans-serif;
+      font-style: normal;
+      text-align: left;
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 30px;
+      letter-spacing: 0.06em;
+      color: #FFFFFF;
+    }
+
+    .ligtasbanko2 {
+  overflow: hidden;
+  margin-top: 400px;
+  width: 1200px;
+  position:relative;
+  background-color: var(--color-white);
+  height: 380px;
+  
+  text-align: left;
+  font-size: var(--font-size-xl);
+  color: var(--color-darkslategray);
+  font-family: var(--font-poppins);
+  margin-left: 200px;
+
+}
+
+  .Movedown {
+    margin-top: 1000px;
+  }
+
+
+
+  </style>
+
+  <title>LigtasBanko</title>
+  <link rel="stylesheet" href="../static/css/index1.css">
+  <link rel="stylesheet" href="../static/css/footer.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <!-- Add Google Fonts for Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav id="desktop-nav">
+    <a href="{{ url_for('index') }}#profile-id">
+    <img src="../static/assets/logo.png" alt="Logo" class="logo-lg">
+      </a>
+
+    <div class="logo1"></div>
+    <div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('email_pwn') }}#profile-id">Check</a></li>
+            <li><a href="#detect">Detect</a></li>
+            <li><a href="{{ url_for('index2') }}#profile-id">Report</a></li>
+            <li><a href="{{ url_for('FAQs') }}#profile-id">FAQs</a></li>
+        </ul>
+    </div>
+  </nav>
+
+  <section id="detect">
+    <p class="section__text__p1">Protect Your Online Security with LigtasBanko's</p>
+    <h1 class="title">Phishing Detection</h1>
+    <br><br>
+    <div class="detect">
+      <div class="group-parent">
+        <div class="rectangle-parent4" id="rectangle-parent4">
+            <div class="rectangle-parent2">
+              <div class="group-child9"></div>
+              <!-- Add this button inside .rectangle-parent2 -->
+              <div class="submit1" id="submitBtn">Submit</div>
+            </div>
+            <div class="rectangle-parent3">
+              <div class="group-child10"></div>
+              <!-- Add this button inside .rectangle-parent2 -->
+              <div class="submit2" id="clearBtn">Clear</div>
+            </div>
+        </div>
+
+
+
+
+        <div id="results" class="results"></div>
+        <div class="group-parent1">
+          <div class="to-submit-a-suspicious-url-and-parent">
+            <div class="group-frame">
+              <div class="group-parent2">
+                <!-- Paste URL -->
+                <div id="PasteURL" class="PasteURL-Group">
+                  <div class="PasteURL-Box"></div>
+                  <div class="PasteURL-BoxOnly"></div>
+                  <img class="serviceslogo-1-icon" alt="" src="../static/assets/link.png" />
+                  <input type="text" id="urlInput" class="insert-link-here" placeholder="Paste URL" />
+                </div>
+
+                <!-- Paste Message -->
+                <div id="Message" class="MessageGroup" style="display: none;">
+                  <div class="Message-Box-and-Text">
+                    <div class="Message-BoxOnly"></div>
+                    <img class="msg-1-icon" alt="" src="../static/assets/message.png" />
+                    <textarea id="msgInput" class="insert-link-here1" placeholder="Paste message"></textarea>
+
+                  </div>
+                </div>
+              
+                <!-- Screenshot -->
+                <div class="ScreenshotGroup" id="Screenshot" style="display: none; cursor: pointer;">
+                  <div class="Screenshot-box" id="uploadLabel">
+                    <!-- Input element for uploading a screenshot -->
+                    <input type="file" accept="image/jpeg, image/jpg, image/png" name="screenshotUpload" id="screenshotUpload" style="position: absolute; left: -9999px; opacity: 0; ">
+                    <label for="screenshotUpload" style="cursor: pointer;">
+                      <img class="icon6" alt="" src="../static/assets/ss.png" />
+                      <div class="filename-placeholder">Upload Screenshot (jpeg/jpg/png)</div>
+                    </label>
+                  </div>
+                </div>
+
+
+
+
+
+                
+
+                
+
+              </div>
+            </div>
+          </div>
+          <div class="choose-how-you-want-to-submit-parent">
+            <div class="choose-how-you">
+              Choose how you want to submit the suspicious content:
+            </div>
+            <div class="rectangle-parent6">
+              <div class="group-child13" id="submissionContainer">
+                <img class="PhishingMethod-icon" alt="" src="../static/assets/Checkmark2.png" />
+                <div id="submissionButton" class="button-rectangle">Select Submission Method</div>
+                <!-- Dropdown Content -->
+                <div class="options-containerPhishingDetector" style="display: none;">
+                  <label class="option-labelPhishingDetector">URL</label>
+                  <label class="option-labelPhishingDetector">Text Message</label>
+                  <label class="option-labelPhishingDetector">Screenshot</label>
+                </div>
+              </div>
+            </div>
+            <div class="attach-the-content">
+              Attach the content in the provided field:
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="dimmer" style="display:none;"></div>
+
+
+  <!-- Chatbot Icon that opens the container -->
+  <img src="../static/assets/LigtasBanko-Chatbot-Icon.png" alt="Chatbot Icon" id="chatbotIcon" />
+
+  <!-- Chatbot container that will be toggled -->
+  <div class="chatbot-container" id="chatbot-Container" style="display: none;">
+    <!-- Set the image with the correct path -->
+    <img src="../static/assets/Chatbot-Background.png" alt="Chatbot Background" id="chatbotBackground">
+
+    <!-- Place the logo inside the chatbot background -->
+    <div class="logo-white">
+      <img src="../static/assets/logo-white.png" alt="LigtasBankoLogo" id="LoGo">
+    </div>
+
+    <!-- Place the arrow inside the chatbot background -->
+    <div class="arrow">
+      <img src="../static/assets/arrow.png" alt="LigtasBankoArrow" id="Arrow-white">
+    </div>
+
+    <!-- Add the text below the logo -->
+    <div class="logo-text">
+      Let Elvi work for you
+    </div>
+
+    <!-- White square inside the chatbot container -->
+    <div class="white-square"></div>
+    
+    <div class="start-now" id="start-now">
+      Start now
+    </div>
+  </div>
+
+  <div class="chat-box" id="chat-box" style="display: none;">
+    <div class="top-design">
+        <div class="Arrow-white">
+            <img src="../static/assets/Elvi-Icon.png" alt="LigtasBankoElvi-Icon" id="Elvi-Icon">
+          </div>
+
+          <!-- Add the text below the logo -->
+        <div class="elvi-text1">
+            Chat with
+        </div>
+    
+        <!-- Add the text below the logo -->
+        <div class="elvi-text2">
+            LigtasBanko's Elvi
+        </div>
+
+        <!-- Place the elvi icon inside the chatbot background -->
+        <div class="Arrow-white-2">
+            <img src="../static/assets/arrow.png" alt="LigtasBankoElvi-Icon" id="Arrow-white-2">
+        </div>
+
+    </div>
+    <div class="message-container" id="message-container">
+      {% for message in session['messages'] %}
+          {% if message.content != 'test' %}
+              <div class="message {{ message.role }}">
+                  <strong>{{ 'User' if message.role == 'user' else 'Assistant' }}:</strong>
+                  <p>{{ message.content }}</p>
+              </div>
+          {% endif %}
+      {% endfor %}
+  </div>
+   
+
+    <div class="textarea-container">
+        <textarea id="user-message" rows="4" cols="50" placeholder="Enter your message..." onkeydown="checkEnter(event)"></textarea>
+    </div>
+</div>
+
+  <footer>
+    <div class="ligtasbanko2">
+      <div class="ligtasbanko3">ligtasbanko</div>
+      <div class="home-services-info-wrapper">
+        <div class="home-services-info-container">
+          <p class="home"><a href="{{ url_for('index') }}#profile-id">Home</a></p>
+          <p class="home"><a href="index.html#services">Services</a></p>
+          <p class="home"><a href="index.html#info">Info</a></p>
+        </div>
+      </div>
+      <div class="tools-report-contact-us-wrapper">
+        <div class="tools-report-contact-container">
+          <p class="home"><a href="index.html#tools">Tools</a></p>
+          <p class="home"><a href="index.html#contact">Contact Us</a></p>
+        </div>
+      </div>
+      <div class="terms-and-conditions-container">
+        <a class="a2" href="{{ url_for('static', filename='Docs/LigtasBanko-TermsandConditions.pdf') }}" target="_blank">Terms and Conditions</a>
+        <a class="a2" href="{{ url_for('static', filename='Docs/LigtasBanko-PrivacyPolicy.pdf') }}" target="_blank">Privacy Policy</a>
+        <br>
+        <a class="a2" href="{{ url_for('static', filename='Docs/LigtasBanko-CookiePolicy.pdf') }}" target="_blank">Cookie Policy</a>
+      </div>
+      <div class="copyright-2024">
+        Copyright © 2024 LigtasBanko. All Rights Reserved.
+      </div>
+      <div class="icons8-facebook-50-2-parent">
+        <img class="icons8-facebook-50-2" alt="" src="../static/assets/fb.png" onclick="window.open('https://www.facebook.com/christinetorres.marasigan')" />
+        <div class="follow-us">Follow us</div>
+        <img class="icons8-instagram-50-1-2" alt="" src="../static/assets/ig.png" onclick="window.open('https://www.instagram.com/iedzel/')" />
+        <img class="linkedin-1-icon" alt="" src="../static/assets/linkedin.png"  />
+        <img class="github-1-icon" alt="" src="../static/assets/github.png" onclick="window.open('https://github.com/Malceid')" />
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+  <script>
+    let screenshotData = null; // Variable to hold the uploaded screenshot data
+    // Automatically upload the screenshot file when selected
+document.getElementById('screenshotUpload').addEventListener('change', (event) => {
+    const fileInput = event.target;
+    const selectedFile = fileInput.files[0]; // Get the selected file
+
+    if (!selectedFile) {
+        alert('No file selected.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('screenshotUpload', selectedFile);
+
+    // Log the contents of FormData to ensure the file is appended correctly
+    console.log('FormData contents:', formData);
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + (pair[1].name || pair[1]));
+
+    }
+
+    fetch('/analyze_url', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('File uploaded successfully:', data);
+        screenshotData = data;
+    })
+    .catch(error => {
+        console.error('Error uploading file:', error);
+    });
+});
+
+
+
+
+document.getElementById('submitBtn').addEventListener('click', () => {
+  event.preventDefault()
+
+    const urlInput = document.getElementById('urlInput').value;
+    const msgInput = document.getElementById('msgInput').value;
+
+    // If a screenshot was uploaded and processed, use the extracted text as the input
+    let ssInput = null;
+    if (screenshotData && screenshotData.extracted_text) {
+        console.log("Both screenshotData and extracted_text are valid:");
+        console.log("Extracted Text: " + screenshotData.extracted_text);
+        ssInput = screenshotData.extracted_text; // Use the extracted text from the uploaded file
+    } else {
+        ssInput = document.getElementById('screenshotUpload').files[0]; // If no extracted text, fall back to the file itself
+    }
+    
+    // Determine which input to use
+    const userInput = urlInput || msgInput || ssInput;
+
+    console.log("This is the user input: " + userInput);
+
+    if (!userInput) {
+        alert('Please enter a URL, message, or upload a screenshot.');
+        return;
+    }
+
+    // Send user input to the server
+    const formData = new FormData();
+    formData.append('user_input', userInput);
+
+    // Append the file input field to the form data if a file is selected
+    if (urlInput) formData.append('urlInput', urlInput);
+    if (msgInput) formData.append('msgInput', msgInput);
+    if (ssInput && typeof ssInput === 'string') {  // Check if ssInput contains extracted text
+        formData.append('screenshotData', ssInput);
+    } else if (ssInput instanceof File) {  // Check if ssInput is the file itself
+        formData.append('screenshotUpload', ssInput);
+    }
+
+    fetch('/analyze_url', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response data:", data);
+        
+        const resultsContainer = document.getElementById('results');
+    
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+
+      // Create the overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100%';
+  overlay.style.height = '100%';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.1)'; // Reduce opacity
+  overlay.style.zIndex = '999'; // Behind the loader
+  document.body.appendChild(overlay);
+
+  // Create the loader
+  const loader = document.createElement('div');
+  loader.id = 'loader';
+  loader.innerHTML = '<div class="spinner"></div>';
+  loader.style.position = 'fixed';
+  loader.style.top = '50%';
+  loader.style.left = '50%';
+  loader.style.transform = 'translate(-50%, -50%)';
+  loader.style.zIndex = '1000'; // Above the overlay
+
+  // Add the spinning PNG
+const spinner = document.createElement('img');
+spinner.src = '../static/assets/logo-loading.png'; // Replace with the path to your PNG file
+spinner.style.width = '90px'; // Adjust size as needed
+spinner.style.height = '90px'; // Adjust size as needed
+spinner.style.animation = 'spin 2s linear infinite'; // Spinning animation
+loader.appendChild(spinner);
+
+// Add styles for the spinning animation
+const style = document.createElement('style');
+style.innerHTML = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  img {
+    display: block;
+  }
+`;
+
+  document.querySelectorAll('.insert-link-here').forEach(element => {
+        element.classList.add('dimmed');
+    });
+
+  // Append the spinner and styles to the document
+  document.head.appendChild(style);
+  document.body.appendChild(loader);
+
+  fetch('/analyze_url', {
+    method: 'POST',
+    body: formData,
+})
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Response data:", data);
+
+        // Process your results here, as per your existing logic
+        const resultsContainer = document.getElementById('results');
+        resultsContainer.innerHTML = ''; // Clear previous results
+
+        data.forEach((result) => {
+             // Iterate over the results and check for 'UNREACHABLE'
+        data.forEach((result, index) => {
+          const resultDiv = document.createElement('div');
+          resultDiv.classList.add('result-item'); // Add a class to the container div
+    
+          let confidenceColor, imageSrc, imageClass;
+    
+          // Check for prediction and set appropriate values
+          if (result.prediction === "PHISHING") {
+              confidenceColor = 'red';
+              imageSrc = '../static/assets/phish.png';
+              imageClass = 'PhishingImage';
+
+              const resultDiv = document.createElement('div');
+              resultDiv.classList.add('result-item');
+
+              const explanationList = Array.isArray(result.explanation)
+                  ? result.explanation.map(explanation => `<li>${explanation}</li>`).join('')
+                  : `<li>No explanation available</li>`;
+
+                  resultDiv.innerHTML = `
+                    <div class="result-content">
+                        <p class="url"><strong>URL:</strong> ${result.url}</p>
+                        <div class="ResultAndConfidence">
+                            <p class="prediction" style="color: ${confidenceColor};">${result.prediction}</p>
+                            <p class="confidence" style="color: ${confidenceColor};">${result.confidence}</p>
+                        </div>
+                        <img src="${imageSrc}" style="margin-top: 70px;" alt="Image" class="${imageClass}">
+                        <ul class="explanation-list" style="margin-top: 40px;">
+                            <li class="important-features" style="margin-top: 40px;"><strong>Most important features:</strong></li>
+                            ${explanationList}
+                        </ul>
+                        <div class="completionphishing-container">
+                            <div class="completionphishing-header">WHY IS IT PHISHING?</div>
+                            <div class="completionphishing-content">
+                                <img src="../static/assets/explanation-logo.png" alt="Image" class="completionphishing-image">
+                                <div class="completionphishing-text">
+                                    ${result.chat_completion}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="benign-steps-container">
+                          <div class="Phishing-Rectangle-Step1">
+                                  <div class="step-number">01</div>
+                                  <div class="block-text-phishing">Block the Number/Email Address:</div>
+                                  <div class="description-phishing">Prevent further interactions with the phishing source.</div>
+                                </div>
+
+                              <div class="Phishing-Rectangle-Step2">
+                              <div class="step-number">02</div>
+                                  <div class="block-text-phishing">Change Your Password/Activate 2FA:</div>
+                                  <div class="description-phishing">Immediately secure your accounts by updating passwords and enabling Two-Factor Authentication.</div>
+                                </div>
+
+
+
+                              <div class="Phishing-Rectangle-Step3">
+                              <div class="step-number">03</div>
+                                  <div class="block-text-phishing">Report to Our Website:</div>
+                                  <div class="description-phishing">Notify us to help improve the detection system and prevent others from falling victim.</div>
+                                </div>
+                    </div>
+                `;
+                resultsContainer.appendChild(resultDiv);
+
+                // After adding the result to the DOM, change the margin-top of .ligtasbanko2
+                const ligtasbanko2 = document.querySelector(".ligtasbanko2");
+                    if (ligtasbanko2) {
+                        ligtasbanko2.style.marginTop = "600px";  // Adjust this value as needed
+                    } else {
+                        console.log("Could not find .ligtasbanko2 element");
+                    }
+          } else if (result.prediction === "BENIGN") {
+              confidenceColor = 'green';
+              imageSrc = '../static/assets/SAFE1.png';
+              imageClass = 'BenignImage';
+              // No need for inline styles here
+
+              const resultDiv = document.createElement('div');
+              resultDiv.classList.add('result-item');
+
+              const explanationList = Array.isArray(result.explanation)
+                  ? result.explanation.map(explanation => `<li>${explanation}</li>`).join('')
+                  : `<li>No explanation available</li>`;
+
+                  resultDiv.innerHTML = `
+                    <div class="result-content">
+                      <p class="url"><strong>URL:</strong> ${result.url}</p>
+                      <div class="ResultAndConfidence">
+                          <p class="prediction" style="color: ${confidenceColor};">${result.prediction}</p>
+                          <p class="confidence" style="color: ${confidenceColor};">${result.confidence}</p>
+                      </div>
+
+                      <div>
+                        <!-- Empty div to create vertical space -->
+                        <img src="${imageSrc}" style="margin-top: 70px;" alt="Image" class="${imageClass}">
+                        <ul class="explanation-list" style="margin-top: 50px;">
+                            <li class="important-features" style="margin-top: 50px;"><strong>Most important features:</strong></li>
+                            ${explanationList}
+                        </ul>
+                    </div>
+
+
+                      <div class="completionbenign-container">
+                          <div class="completionbenign-header">WHY IS IT SAFE?</div>
+                          <div class="completionbenign-content">
+                              <img src="../static/assets/explanation-logo.png" alt="Image" class="completionphishing-image">
+                              <div class="completionphishing-text">
+                                  ${result.chat_completion}
+                              </div>
+                          </div>
+                      </div>
+                      <div class="benign-steps-container">
+                        <div class="Benign-Rectangle-Step1">
+                          <div class="step-number">01</div>
+                              <div class="block-text">Identify Safe Links:</div>
+                              <div class="description">Look for "https" and ensure the URL matches the official website.</div>
+                            </div>
+
+
+                            <div class="Benign-Rectangle-Step2">
+                            <div class="step-number">02</div>
+                                <div class="block-text">Stay Cautious:</div>
+                                <div class="description">Avoid clicking links from unknown sources or responding to urgent requests for personal information.</div>
+                              </div>
+
+
+                            <div class="Benign-Rectangle-Step3">
+                            <div class="step-number">03</div>
+                                <div class="block-text">Practice Good Habits:</div>
+                                <div class="description">Regularly update passwords, enable Two-Factor Authentication, and stay informed about phishing tactics.</div>
+                              </div>
+                              </div>
+
+                    </div>
+                `;
+                resultsContainer.appendChild(resultDiv);
+
+                    // After adding the result to the DOM, change the margin-top of .ligtasbanko2
+                    const ligtasbanko2 = document.querySelector(".ligtasbanko2");
+                    if (ligtasbanko2) {
+                        ligtasbanko2.style.marginTop = "600px";  // Adjust this value as needed
+                    } else {
+                        console.log("Could not find .ligtasbanko2 element");
+                    }
+
+          } else if (result.prediction === "UNREACHABLE") {
+              console.log('UNREACHABLE detected');
+              confidenceColor = 'gray'; // Set gray for unreachable
+              imageSrc = '../static/assets/Unreachable.png'; // No image for unreachable
+              imageClass = 'UnreachableImage';
+
+              const resultDiv = document.createElement('div');
+              resultDiv.classList.add('result-item');
+
+              const explanationList = Array.isArray(result.explanation)
+                  ? result.explanation.map(explanation => `<li>${explanation}</li>`).join('')
+                  : `<li>No explanation available</li>`;
+
+                  resultDiv.innerHTML = `
+                    <div class="result-content">
+                        <p class="url"><strong>URL:</strong> ${result.url}</p>
+                        <div class="ResultAndConfidence">
+                            <p class="prediction" style="color: ${confidenceColor};">${result.prediction}</p>
+                            <p class="confidence" style="color: ${confidenceColor};">${result.confidence}</p>
+                        </div>
+                        <img src="${imageSrc}" alt="Image" class="${imageClass}" style="margin-top: 70px;">
+                        <ul class="explanation-list">
+                            <li class="important-features" style="margin-top: 70px;"><strong>Most important features:</strong></li>
+                            ${explanationList}
+                        </ul>
+                        <div class="completionunknown-container">
+                            <div class="completionunknown-header">Link not found!</div>
+                            <div class="completionunknown-content">
+                                <img src="../static/assets/explanation-logo.png" alt="Image" class="completionphishing-image">
+                                <div class="completionphishing-text">
+                                    ${result.chat_completion}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                resultsContainer.appendChild(resultDiv);
+              
+                
+          } else {
+              console.log('Unknown prediction:', result.prediction);
+          }
+          console.log("Result.prediction is: ", result.prediction);
+
+
+          // Ensure result.explanation is an array, else provide a default message
+          const explanationList = Array.isArray(result.explanation) ? 
+              result.explanation.map(explanation => `<li>${explanation}</li>`).join('') :
+              `<li>No explanation available</li>`; // Default message for non-array explanations
+
+          resultsContainer.appendChild(resultDiv);
+
+          // After appending results, adjust the position of ResultAndConfidence
+          const selectedValue = document.getElementById("submissionButton").textContent;
+          if (selectedValue === "Text Message") {
+              const BenignContainer = document.querySelector('.completionbenign-container'); // Use querySelector to target the .prediction element
+              if (BenignContainer) {
+                BenignContainer.style.top = "180px"; // Move the prediction down (adjust the value as needed)
+              }
+              
+          }
+
+          if (selectedValue === "Text Message") {
+              const BenignContainer = document.querySelector('.completionphishing-container'); // Use querySelector to target the .prediction element
+              if (BenignContainer) {
+                BenignContainer.style.top = "180px"; // Move the prediction down (adjust the value as needed)
+              }
+              
+          }
+
+          if (selectedValue === "Text Message") {
+              const BenignContainer = document.querySelector('.completionunknown-container'); // Use querySelector to target the .prediction element
+              if (BenignContainer) {
+                BenignContainer.style.top = "180px"; // Move the prediction down (adjust the value as needed)
+              }
+              
+          }
+
+          if (selectedValue === "Text Message") {
+              const Prediction = document.querySelector('.prediction');
+              if (Prediction) {
+                Prediction.style.top = "300px";
+              }
+              
+          }
+
+          if (selectedValue === "Text Message") {
+              const Confidence = document.querySelector('.confidence');
+              if (Confidence) {
+                Confidence.style.top = "250px";
+              }
+              
+          }
+
+          if (selectedValue === "Text Message") {
+              const Buttons = document.querySelector('.rectangle-parent4');
+              if (Buttons) {
+                Buttons.style.top = "70px";
+              }
+              
+          }
+
+
+        });
+        });
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while analyzing. Please try again.');
+    })
+    .finally(() => {
+        // Remove the loader and overlay after processing is complete
+        document.body.removeChild(loader);
+        document.body.removeChild(overlay);
+    });
+
+
+    });
+
+  
+
+  // Check if Enter key is pressed
+  function checkEnter(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();  // Prevent new line insertion
+                sendMessage();
+            }
+        }
+
+        // Send message to server and get response
+        function sendMessage() {
+            const userMessage = document.getElementById('user-message').value;
+            const maxTokens = 8192;  // Fixed token limit for the selected model
+
+            // Append user message inside the user-box
+            const messageContainer = document.getElementById('message-container');
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('message', 'user');
+
+            // Create user-box to enclose the user's message
+            const userBox = document.createElement('div');
+            userBox.classList.add('user-box');
+            userBox.innerHTML = `<p>${userMessage}</p>`;
+
+            // Append user box to the user's message
+            userDiv.appendChild(userBox);
+            messageContainer.appendChild(userDiv);
+
+
+            // Clear the message box
+            document.getElementById('user-message').value = '';
+
+            // Send to server
+            fetch('/send_message', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    'message': userMessage,
+                    'max_tokens': maxTokens
+                }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Append assistant's response inside a white square (bot-box)
+                const assistantDiv = document.createElement('div');
+                assistantDiv.classList.add('message', 'assistant');
+                
+                // Create bot-box to enclose the assistant's response
+                const botBox = document.createElement('div');
+                botBox.classList.add('bot-box');
+                botBox.innerHTML = `<p>${data.response}</p>`;
+
+                // Apply padding-left to shift text to the right
+                botBox.style.paddingLeft = '20px';  // Adjust the value as needed
+
+                // Append bot box to the assistant's message
+                assistantDiv.appendChild(botBox);
+                messageContainer.appendChild(assistantDiv);
+
+                // Scroll to the bottom to show the latest message
+                const chatBox = document.getElementById('chat-box');
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+
+            });
+        }
+
+      const chatbotIcon = document.getElementById('chatbotIcon');
+      const chatbotContainer = document.getElementById('chatbot-Container');
+      const arrow = document.getElementById('Arrow-white');
+      const startNow = document.getElementById('start-now');
+      const chatbotContainer2 = document.getElementById('chat-box');
+      const arrow2 = document.getElementById('Arrow-white-2');
+      const dimmer = document.getElementById('dimmer'); // Reference to the dimmer element
+
+      // When the chatbot icon is clicked
+      chatbotIcon.addEventListener('click', () => {
+          console.log('Chatbot icon clicked');
+          chatbotIcon.style.display = 'none'; // Hide the icon
+          chatbotContainer2.style.display = 'none'; // Hide the second container
+          chatbotContainer.style.display = 'block'; // Show the first container
+          dimmer.style.display = 'block'; // Show the dimmer (dim the rest of the page)
+      });
+
+      // When the arrow is clicked (to hide the chatbot container)
+      arrow.addEventListener('click', () => {
+          console.log('Arrow clicked');
+          chatbotContainer.style.display = 'none'; // Hide the first container
+          chatbotContainer2.style.display = 'none'; // Hide the second container
+          chatbotIcon.style.display = 'block'; // Show the icon
+          dimmer.style.display = 'none'; // Hide the dimmer (restore the page visibility)
+      });
+
+      // When the "Start Now" button is clicked
+      startNow.addEventListener('click', () => {
+          console.log('Start Now clicked');
+          chatbotContainer.style.display = 'none'; // Hide the first container
+          chatbotIcon.style.display = 'none'; // Hide the icon
+          chatbotContainer2.style.display = 'block'; // Show the second container
+          dimmer.style.display = 'block'; // Show the dimmer (dim the rest of the page)
+      });
+
+      // When the second arrow is clicked (to hide the chatbot container)
+      arrow2.addEventListener('click', () => {
+          console.log('Arrow2 clicked');
+          chatbotContainer.style.display = 'none'; // Hide the first container
+          chatbotContainer2.style.display = 'none'; // Hide the second container
+          chatbotIcon.style.display = 'block'; // Show the icon
+          dimmer.style.display = 'none'; // Hide the dimmer (restore the page visibility)
+      });
+
+      // When clicking outside the chatbot icon or container, hide the containers, show the icon, and remove the dimmer
+      document.addEventListener('click', (event) => {
+          if (!chatbotContainer.contains(event.target) && 
+              !chatbotContainer2.contains(event.target) && 
+              !chatbotIcon.contains(event.target)) {
+              chatbotContainer.style.display = 'none';
+              chatbotContainer2.style.display = 'none';
+              chatbotIcon.style.display = 'block';
+              dimmer.style.display = 'none'; // Hide the dimmer
+          }
+      });
+
+
+         // Function to clear messages
+      function clearMessages() {
+          fetch('/clear_messages', {
+              method: 'POST'
+          })
+          .then(response => response.json())
+          .then(data => {
+              console.log('Messages cleared successfully');
+          })
+          .catch(error => {
+              console.error('Error clearing messages:', error);
+          });
+      }
+
+      // Call clearMessages when the page loads
+      window.addEventListener('load', clearMessages); 
+      
+</script>
+
+    
+
+  
+</body>
+</html>
